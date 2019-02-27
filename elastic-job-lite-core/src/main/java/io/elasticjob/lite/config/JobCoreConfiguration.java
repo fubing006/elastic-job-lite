@@ -72,17 +72,28 @@ public final class JobCoreConfiguration {
         private final String cron;
         
         private final int shardingTotalCount;
-        
+        /**
+         * 分片序列号和参数。选填。从零开始，且小于shardingTotalCount
+         */
         private String shardingItemParameters = "";
-        
+        /**
+         * 作业自定义参数。选填。可通过传递该参数为作业调度的业务方法传参，用于实现带参数的作业
+         */
+
         private String jobParameter = "";
-        
+        /**
+         * 开启表示如果作业在一次作业执行中途宕机，允许将该次未完成的作业在另一作业节点上补偿执行。默认为 false。选填。
+         */
         private boolean failover;
-        
+        /**
+         * 否开启错过作业重新执行。默认为 true。选填
+         */
         private boolean misfire = true;
         
         private String description = "";
-        
+        /**
+         * 作业属性配置。选填。
+         */
         private final JobProperties jobProperties = new JobProperties();
         
         /**

@@ -42,6 +42,7 @@ public final class JobInstance {
     private final String jobInstanceId;
     
     public JobInstance() {
+        //jobInstanceId 格式: ${IP}@-@${PID}。其中 PID 为进程编号。同一个 Elastic-Job-Lite 实例，不同的作业使用相同的作业实例主键
         jobInstanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
     

@@ -49,7 +49,7 @@ import java.util.Properties;
 
 /**
  * 作业调度器.
- * 
+ * 使用 Quartz 作为调度内核
  * @author zhangliang
  * @author caohao
  */
@@ -58,12 +58,20 @@ public class JobScheduler {
     public static final String ELASTIC_JOB_DATA_MAP_KEY = "elasticJob";
     
     private static final String JOB_FACADE_DATA_MAP_KEY = "jobFacade";
-    
+    /**
+     * Lite作业配置
+     */
     private final LiteJobConfiguration liteJobConfig;
-    
+    /**
+     * 注册中心
+     */
     private final CoordinatorRegistryCenter regCenter;
     
     // TODO 为测试使用,测试用例不能反复new monitor service,以后需要把MonitorService重构为单例
+    /**
+     * 调度器门面对象
+     * 为调度器提供内部服务的门面类
+     */
     @Getter
     private final SchedulerFacade schedulerFacade;
     
@@ -79,12 +87,18 @@ public class JobScheduler {
     }
     
     private JobScheduler(final CoordinatorRegistryCenter regCenter, final LiteJobConfiguration liteJobConfig, final JobEventBus jobEventBus, final ElasticJobListener... elasticJobListeners) {
+        // 添加 作业运行实例
         JobRegistry.getInstance().addJobInstance(liteJobConfig.getJobName(), new JobInstance());
+        // 设置 Lite作业配置
         this.liteJobConfig = liteJobConfig;
+        // 设置 注册中心
         this.regCenter = regCenter;
+        // 设置 作业监听器
         List<ElasticJobListener> elasticJobListenerList = Arrays.asList(elasticJobListeners);
         setGuaranteeServiceForElasticJobListeners(regCenter, elasticJobListenerList);
+        // 设置 调度器门面对象
         schedulerFacade = new SchedulerFacade(regCenter, liteJobConfig.getJobName(), elasticJobListenerList);
+        // 设置 作业门面对象
         jobFacade = new LiteJobFacade(regCenter, liteJobConfig.getJobName(), Arrays.asList(elasticJobListeners), jobEventBus);
     }
     

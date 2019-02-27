@@ -34,7 +34,9 @@ import io.elasticjob.lite.util.env.TimeService;
 public final class ConfigurationService {
     
     private final TimeService timeService;
-    
+    /**
+     * 封装注册中心，提供存储服务
+     */
     private final JobNodeStorage jobNodeStorage;
     
     public ConfigurationService(final CoordinatorRegistryCenter regCenter, final String jobName) {
@@ -67,6 +69,7 @@ public final class ConfigurationService {
      * @param liteJobConfig 作业配置
      */
     public void persist(final LiteJobConfiguration liteJobConfig) {
+        // 校验注册中心存储的作业配置的作业实现类全路径( jobClass )和当前的是否相同，如果不同，则认为是冲突，不允许存储
         checkConflictJob(liteJobConfig);
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT) || liteJobConfig.isOverwrite()) {
             jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
@@ -95,7 +98,8 @@ public final class ConfigurationService {
     
     /**
      * 检查本机与注册中心的时间误差秒数是否在允许范围.
-     * 
+     *
+     * Elastic-Job-Lite 作业触发是依赖本机时间，相同集群使用注册中心时间为基准，校验本机与注册中心的时间误差是否在允许范围内( LiteJobConfiguration.maxTimeDiffSeconds )。
      * @throws JobExecutionEnvironmentException 本机与注册中心的时间误差秒数不在允许范围所抛出的异常
      */
     public void checkMaxTimeDiffSecondsTolerable() throws JobExecutionEnvironmentException {
